@@ -61,8 +61,8 @@ prin7r-baseline ShadCN rule, narrowly scoped:
 ## 4. Color tokens
 
 ```
---bone:        #EFE8DA   # surface-0 (paper)
---haze:        #D5CDB9   # surface-1 (alt section)
+--bone:        #FAFAF8   # surface-0 (paper)
+--haze:        #ECEAE5   # surface-1 (alt section)
 --contour:     #A39A82   # divider · hairline · 1px lines
 --sage:        #5E7263   # primary line work · topo
 --sage-deep:   #3F4F44   # darker sage variant

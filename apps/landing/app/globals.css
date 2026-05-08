@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --bone: #efe8da;
-  --haze: #d5cdb9;
+  --bone: #FAFAF8;
+  --haze: #ECEAE5;
   --contour: #a39a82;
   --sage: #5e7263;
   --sage-deep: #3f4f44;

@@ -64,8 +64,8 @@ dedup at ingest, and send only the matches that actually beat the comp.**
 
 | Role | Hex | Use |
 |---|---|---|
-| Bone (paper) | `#EFE8DA` | Primary surface |
-| Haze (paper-2) | `#D5CDB9` | Alternating section background |
+| Bone (paper) | `#FAFAF8` | Primary surface |
+| Haze (paper-2) | `#ECEAE5` | Alternating section background |
 | Contour | `#A39A82` | Hairline dividers, 1 px lines |
 | Sage | `#5E7263` | Topo-map line work, primary muted |
 | Sage-deep | `#3F4F44` | Hover shade for sage |
