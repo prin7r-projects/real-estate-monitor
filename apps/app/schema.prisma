@@ -1,0 +1,114 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+model User {
+  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now())
+  email          String?  @unique
+  tgChatId       String?  @unique
+  tz             String   @default("UTC")
+  isAdmin        Boolean  @default(false)
+
+  subscriptionStatus String? // 'active', 'cancel_at_period_end', 'past_due', 'deleted'
+  subscriptionPlan   String? // 'watch', 'deep_watch'
+  datePaid           DateTime?
+
+  profiles       Profile[]
+  subscriptions  Subscription[]
+}
+
+model Profile {
+  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String
+
+  name           String
+  city           String
+  side           String   @default("rent") // rent | sale | both
+  minPriceCents  Int      @default(0)
+  maxPriceCents  Int      @default(0)
+  minBedrooms    Int      @default(1)
+  radiusKm       Float    @default(5.0)
+  extras         Json     @default("{}") // {quiet_only, parking, etc}
+  status         String   @default("active") // active | paused | stopped
+
+  matches        Match[]
+
+  @@index([userId])
+  @@index([city, status])
+}
+
+model Listing {
+  id             String   @id @default(uuid())
+  sourceKey      String
+  city           String
+  side           String // rent | sale
+  priceCents     Int
+  sqm            Int?
+  bedrooms       Int?
+  addressNorm    String
+  // PostGIS geography column - stored as raw SQL
+  publishedAt    DateTime
+  lastSeenAt     DateTime @default(now())
+  fingerprint    String   @unique
+
+  matches        Match[]
+
+  @@index([city, publishedAt])
+  @@index([fingerprint])
+}
+
+model Match {
+  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now())
+
+  profile        Profile  @relation(fields: [profileId], references: [id])
+  profileId      String
+
+  listing        Listing  @relation(fields: [listingId], references: [id])
+  listingId      String
+
+  score          Float
+  signals        Json     @default("{}") // {residual, velocity, dom, quality, fit, freshness, anomaly}
+  matchedAt      DateTime @default(now())
+  deliveredEmailAt DateTime?
+  deliveredTgAt  DateTime?
+
+  @@unique([profileId, listingId])
+  @@index([profileId, matchedAt])
+}
+
+model Source {
+  id             String   @id @default(uuid())
+  key            String   @unique
+  cityCoverage   String
+  pollIntervalS  Int      @default(60)
+  status         String   @default("healthy") // healthy | degraded | down
+  lastSuccessAt  DateTime?
+
+  @@index([status])
+}
+
+model Subscription {
+  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now())
+
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String
+
+  tier           String   @default("watch") // watch | deep_watch
+  status         String   @default("active") // active | cancelled | expired
+  endsAt         DateTime?
+
+  @@index([userId, status])
+}

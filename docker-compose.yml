@@ -1,4 +1,37 @@
 services:
+  # PostgreSQL with PostGIS
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: skyline-watch-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: skyline_watch
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: skyline-watch-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Landing page (existing)
   landing:
     build:
       context: .
@@ -16,3 +49,55 @@ services:
       - "traefik.http.routers.real-estate-monitor.entrypoints=websecure"
       - "traefik.http.routers.real-estate-monitor.tls.certresolver=letsencrypt"
       - "traefik.http.services.real-estate-monitor.loadbalancer.server.port=3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # API (ingestion + scoring)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: skyline-watch-api:latest
+    container_name: skyline-watch-api
+    restart: unless-stopped
+    env_file:
+      - apps/api/.env
+    expose:
+      - "3001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.real-estate-monitor-api.rule=Host(`real-estate-monitor.prin7r.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.real-estate-monitor-api.entrypoints=websecure"
+      - "traefik.http.routers.real-estate-monitor-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.real-estate-monitor-api.loadbalancer.server.port=3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Dashboard (Wasp app)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    image: skyline-watch-app:latest
+    container_name: skyline-watch-app
+    restart: unless-stopped
+    env_file:
+      - apps/app/.env.server
+    expose:
+      - "3002"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.real-estate-monitor-app.rule=Host(`real-estate-monitor.prin7r.com`) && PathPrefix(`/app`)"
+      - "traefik.http.routers.real-estate-monitor-app.entrypoints=websecure"
+      - "traefik.http.routers.real-estate-monitor-app.tls.certresolver=letsencrypt"
+      - "traefik.http.services.real-estate-monitor-app.loadbalancer.server.port=3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

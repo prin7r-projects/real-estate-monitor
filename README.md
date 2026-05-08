@@ -2,16 +2,12 @@
 
 > **Live URL:** [real-estate-monitor.prin7r.com](https://real-estate-monitor.prin7r.com)
 > **Notion opportunity:** [Real estate market monitoring](https://www.notion.so/Real-estate-market-monitoring-3543ceec2619815b8c7ff494b10f2d0d)
-> **Wave:** 2 · **Stage:** Qualified · **Stack:** SaaS (landing live, dashboard deferred to Wave 3)
+> **Wave:** 3 · **Stage:** In Development · **Stack:** SaaS (landing live, dashboard + API in progress)
 
 Skyline Watch is a market-watch terminal for residential real estate. Subscribers set a target city,
 budget, and must-haves &mdash; **sale or rent**. Skyline polls the listing sources, scores every new
 listing against a local baseline using a 7-signal model, and pushes the matches to the subscriber's
 inbox and Telegram inside two minutes.
-
-The brand identity is **topo-map technical** &mdash; sage and clay on bone, editorial Fraunces serif over
-IBM Plex Mono ticker. The landing reads like a back-office market-watch terminal, not a Zillow-ish
-listing portal.
 
 ## Screenshots
 
@@ -26,7 +22,9 @@ real-estate-monitor/
 ├── DESIGN.md                       # Canonical design + style guide (15 sections)
 ├── README.md                       # This file
 ├── Dockerfile.landing              # Multistage Next.js 15 standalone build
-├── docker-compose.yml              # Single landing service · Traefik labels · env_file: .env
+├── Dockerfile.api                  # API service build
+├── Dockerfile.app                  # Wasp dashboard build
+├── docker-compose.yml              # Full stack: postgres + redis + landing + api + app
 ├── .env.example                    # NOWPAYMENTS_* + NEXT_PUBLIC_SITE_URL
 ├── .github/workflows/
 │   └── landing-build.yml           # CI typecheck + next build on apps/landing/**
@@ -46,7 +44,23 @@ real-estate-monitor/
 │   │   │   ├── env.ts              # MissingEnvError + helpers
 │   │   │   └── nowpayments.ts      # invoice POST + IPN HMAC-SHA512
 │   │   └── public/                 # icon.svg, og-image.svg, robots.txt
-│   └── app/                        # placeholder · Wave 3 open-saas fork (see apps/app/README.md)
+│   ├── app/                        # Wasp dashboard (Phase 1+)
+│   │   ├── main.wasp               # Wasp configuration
+│   │   ├── schema.prisma           # Database schema
+│   │   └── src/
+│   │       ├── profiles/           # Profile management
+│   │       ├── matches/            # Match dashboard
+│   │       └── lib/                # Utilities
+│   └── api/                        # Bun + Hono API (Phase 2+)
+│       ├── src/
+│       │   ├── db/                 # Database schema + connection
+│       │   ├── pollers/            # Source pollers
+│       │   ├── normalizer/         # Listing normalization
+│       │   ├── deduper/            # Deduplication
+│       │   ├── scoring/            # 7-signal scoring engine
+│       │   ├── delivery/           # Email + Telegram delivery
+│       │   └── routes/             # API routes
+│       └── drizzle/                # Database migrations
 ├── docs/
 │   ├── 01-brand-identity.md
 │   ├── 02-architecture.md
@@ -58,6 +72,9 @@ real-estate-monitor/
 │   ├── 08-marketing-strategy.md
 │   ├── 09-go-to-market.md
 │   ├── 10-pitch-deck.md
+│   ├── 11-user-stories-and-scenarios.md
+│   ├── 12-technical-specification.md
+│   ├── 13-implementation-plan.md
 │   ├── pitch-deck.html             # Self-contained 10-slide deck
 │   └── screenshots/                # landing-desktop.png · landing-mobile.png
 └── scripts/
@@ -66,15 +83,40 @@ real-estate-monitor/
 
 ## Quickstart (local development)
 
+### Prerequisites
+
+- Node.js 20+
+- pnpm
+- PostgreSQL 16 with PostGIS
+- Redis
+
+### Setup
+
 ```bash
+# Clone repository
+git clone https://github.com/prin7r-projects/real-estate-monitor.git
+cd real-estate-monitor
+
+# Start database and Redis
+docker compose up -d postgres redis
+
+# Set up landing page
 cd apps/landing
+cp .env.example .env.local
 pnpm install
 pnpm dev          # http://localhost:3000
-pnpm build        # production bundle
-```
 
-Then `cp .env.example apps/landing/.env.local` and fill the `NOWPAYMENTS_*` keys to test the
-checkout route end-to-end against the real NOWPayments API.
+# Set up API
+cd ../api
+cp .env.example .env
+pnpm install
+pnpm db:migrate
+pnpm dev          # http://localhost:3001
+
+# Set up dashboard
+cd ../app
+# Follow Wasp setup instructions
+```
 
 ## Deployment
 
@@ -88,9 +130,6 @@ git pull
 docker compose up -d --build
 ```
 
-The container expects a `.env` file alongside `docker-compose.yml` with the same variable names as
-`.env.example`. Live keys live only on the server, never in git.
-
 ## Payment flow
 
 | Endpoint | Method | Purpose |
@@ -102,10 +141,31 @@ The container expects a `.env` file alongside `docker-compose.yml` with the same
 Three tiers (`single $39 / mo`, `multi $119 / mo`, `investor $349 / mo`). Click any pricing CTA on
 the live landing to open a real unpaid invoice once the server `.env` has live `NOWPAYMENTS_API_KEY`.
 
+## API Endpoints
+
+### Health
+- `GET /api/healthz` - Health check
+- `GET /api/readyz` - Readiness check
+
+### Profiles
+- `GET /api/v1/profiles` - List user's profiles
+- `POST /api/v1/profiles` - Create new profile
+- `GET /api/v1/profiles/:id` - Get profile details
+- `PATCH /api/v1/profiles/:id` - Update profile
+- `POST /api/v1/profiles/:id/pause` - Pause profile
+- `POST /api/v1/profiles/:id/resume` - Resume profile
+
+### Matches
+- `GET /api/v1/matches` - Get user's matches
+- `GET /api/v1/matches/:id` - Get match details
+
+### Sources (Operator only)
+- `GET /api/v1/sources` - List all sources
+- `POST /api/v1/sources/:id/restart` - Restart source
+
 ## Quality gates (per playbook v2 §D)
 
-See [`DESIGN.md`](./DESIGN.md) §12. Status table in
-`/Users/keer/projects/prin7r/wave2-reports/real-estate-monitor.md`.
+See [`DESIGN.md`](./DESIGN.md) §12.
 
 ## License
 
