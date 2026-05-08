@@ -1,6 +1,9 @@
 import { BasePoller } from './base';
 import { createLisbonPoller, createMadridPoller } from './idealista';
 import { createBerlinPoller } from './immobilienscout';
+import { createAmsterdamPoller } from './funda';
+import { createLondonPoller } from './rightmove';
+import { createAthensPoller } from './spitogatos';
 import { db } from '../db';
 import { sources } from '../db/schema';
 import { eq } from 'drizzle-orm';
@@ -17,7 +20,7 @@ export class PollerManager {
     // Get API keys from environment
     const idealistaApiKey = process.env.IDEALISTA_API_KEY;
 
-    // Create pollers for Phase 2 cities
+    // Phase 2 cities (hot sources - 60s interval)
     if (idealistaApiKey) {
       // Lisbon - Idealista
       const lisbonPoller = createLisbonPoller(idealistaApiKey);
@@ -33,6 +36,20 @@ export class PollerManager {
     // Berlin - ImmoScout24 (no API key required for public listings)
     const berlinPoller = createBerlinPoller();
     this.pollers.set('immobilienscout24-berlin', berlinPoller);
+
+    // Phase 6 cities (warm sources - 300s interval)
+    
+    // Amsterdam - Funda
+    const amsterdamPoller = createAmsterdamPoller();
+    this.pollers.set('funda-amsterdam', amsterdamPoller);
+
+    // London - Rightmove
+    const londonPoller = createLondonPoller();
+    this.pollers.set('rightmove-london', londonPoller);
+
+    // Athens - Spitogatos
+    const athensPoller = createAthensPoller();
+    this.pollers.set('spitogatos-athens', athensPoller);
 
     console.log(`[SKYLINE_INGEST] Initialized ${this.pollers.size} pollers`);
   }
@@ -187,5 +204,13 @@ export class PollerManager {
 
   getPoller(key: string): BasePoller | undefined {
     return this.pollers.get(key);
+  }
+
+  getActivePollerCount(): number {
+    return Array.from(this.pollers.values()).filter(p => p['isRunning']).length;
+  }
+
+  getTotalPollerCount(): number {
+    return this.pollers.size;
   }
 }
