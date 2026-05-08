@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap");
+/* Fonts are preloaded in app/layout.tsx (DM Sans, Inter, IBM Plex Mono) — no @import here. */
 
 @tailwind base;
 @tailwind components;
