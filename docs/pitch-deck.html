@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Skyline Watch — Pitch Deck</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bone:#EFE8DA; --haze:#D5CDB9; --contour:#A39A82;
+    --sage:#5E7263; --clay:#C8794D; --ink:#1B1F1C; --graphite:#4B5050;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; background:#181c19; color:var(--ink); font-family:Inter, system-ui, sans-serif; }
+  body { padding:32px 0; }
+  .deck { display:flex; flex-direction:column; gap:32px; align-items:center; }
+  .slide {
+    width: min(1100px, 92vw);
+    aspect-ratio: 16/9;
+    background:var(--bone);
+    border:1px solid var(--contour);
+    padding:5% 6%;
+    color:var(--ink);
+    position:relative;
+    overflow:hidden;
+  }
+  .slide::after {
+    content:""; position:absolute; inset:8px; border:1px solid rgba(163,154,130,.45); pointer-events:none;
+  }
+  .num {
+    position:absolute; right:24px; bottom:18px;
+    font-family:'IBM Plex Mono', monospace; font-size:.72rem; letter-spacing:.16em; color:var(--graphite);
+  }
+  h1, h2 { font-family:'Fraunces', serif; font-weight:500; letter-spacing:-.022em; line-height:1.05; margin:0 0 .8rem; color:var(--ink); }
+  h1 { font-size: clamp(2.4rem, 4.8vw, 4rem); }
+  h2 { font-size: clamp(1.7rem, 3.4vw, 2.6rem); }
+  p, li { font-size:1rem; line-height:1.55; color:var(--graphite); margin:0 0 .6rem; }
+  ul { margin:0; padding-left:1.2em; }
+  .kicker { font-family:'IBM Plex Mono', monospace; font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--graphite); }
+  .stamp {
+    display:inline-flex; align-items:center; gap:.4rem; background:var(--clay); color:var(--bone);
+    font-family:'IBM Plex Mono', monospace; font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+    padding:.2rem .55rem; border-radius:2px;
+  }
+  .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:2rem; }
+  .grid-3 { display:grid; grid-template-columns: repeat(3, 1fr); gap:1.4rem; }
+  .pill { font-family:'IBM Plex Mono', monospace; font-size:.78rem; padding:.35rem .7rem; border:1px solid var(--contour); border-radius:2px; display:inline-flex; gap:.4rem; align-items:center; }
+  .pill .dot { width:6px; height:6px; background:var(--sage); border-radius:1px; }
+  table { width:100%; border-collapse:collapse; font-size:.94rem; }
+  th, td { text-align:left; padding:.55rem .8rem; border-bottom:1px dashed var(--contour); color:var(--ink); }
+  th { color:var(--graphite); font-family:'IBM Plex Mono', monospace; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; font-weight:500; }
+  .topo {
+    position:absolute; inset:0; opacity:.18; pointer-events:none;
+    background-image: repeating-radial-gradient(circle at 0% 50%, transparent 0, transparent 32px, rgba(94,114,99,.4) 32px, rgba(94,114,99,.4) 33px);
+  }
+  .signet { display:inline-block; vertical-align:middle; }
+  pre { font-family:'IBM Plex Mono', monospace; font-size:.85rem; background:var(--haze); padding:1rem; border-radius:2px; overflow:auto; }
+  .cite { font-family:'IBM Plex Mono', monospace; font-size:.78rem; color:var(--graphite); }
+  .italic { font-style:italic; color:var(--clay); }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1 -->
+  <section class="slide">
+    <div class="topo"></div>
+    <span class="kicker">market-watch terminal · sale + rent</span>
+    <h1 style="margin-top:1.5rem"><svg class="signet" width="44" height="44" viewBox="0 0 36 36"><rect x="2" y="2" width="32" height="32" fill="none" stroke="#1B1F1C" stroke-width="1.4"/><path d="M5 26 L9 18 L14 22 L20 12 L25 17 L31 9" stroke="#5E7263" stroke-width="1.6" fill="none"/><circle cx="20" cy="12" r="2.8" fill="#C8794D" stroke="#1B1F1C"/></svg> Skyline Watch</h1>
+    <p style="font-size:1.3rem; color:var(--ink); max-width:760px; line-height:1.4">Real-time alerts on residential listings worth chasing. <span class="italic">Sale and rent. 24 cities. 7-signal scoring.</span></p>
+    <div style="margin-top:2rem">
+      <span class="pill"><span class="dot"></span>real-estate-monitor.prin7r.com</span>
+    </div>
+    <span class="num">01 / 10</span>
+  </section>
+
+  <!-- Slide 2 -->
+  <section class="slide">
+    <span class="kicker">The problem</span>
+    <h2 style="margin-top:.8rem">You lost the apartment to someone faster.</h2>
+    <p>Idealista's saved-search runs daily. Zillow's email digest is worse. Realtor.com ranks by recency, not by whether the listing is actually a deal. MLS is broker-locked. RTR pro tools are agency-grade ($500+/mo).</p>
+    <p>The first <strong>4 hours</strong> after a rent listing is posted is when half the viewings get booked. The first <strong>14 days</strong> after a sale listing hits the market is when the comp-baseline residual is biggest.</p>
+    <p style="color:var(--ink); font-family:'Fraunces', serif; font-size:1.4rem">You can't be on the right portal at the right minute, every minute. We can.</p>
+    <span class="num">02 / 10</span>
+  </section>
+
+  <!-- Slide 3 -->
+  <section class="slide">
+    <span class="kicker">The product</span>
+    <h2 style="margin-top:.8rem">Skyline polls. Scores. Pages you within minutes.</h2>
+    <div class="grid-2" style="margin-top:1rem">
+      <div>
+        <p>We poll the relevant sources every <strong>60–180 seconds</strong>, score every new sale and rent listing against a same-city / same-bedroom / same-decade comp baseline using a <strong>7-signal model</strong>, and push the matches to your inbox and Telegram.</p>
+        <p>Median P50 alert latency: <strong>90 s</strong>. P99: <strong>6 min</strong>.</p>
+      </div>
+      <div style="background:var(--bone); border:1px solid var(--contour); padding:1rem; font-family:'IBM Plex Mono', monospace; font-size:.84rem">
+        <div style="display:flex; justify-content:space-between; margin-bottom:.6rem"><span class="stamp">MATCHED 47s AGO</span><span class="kicker">SKW · LIS-08</span></div>
+        <div style="font-family:'Fraunces', serif; font-size:1.05rem; font-weight:600">Estrela · 1BR + study · 1,450 €/mo</div>
+        <div style="color:var(--graphite); font-size:.78rem; margin:.2rem 0 .6rem">76 m² · listed 3m 12s ago · score 90</div>
+        <div style="border-top:1px dashed var(--contour); padding:.3rem 0; display:flex; justify-content:space-between"><span class="kicker">comp baseline</span><span>19,07 €/m² · this 19,08</span></div>
+        <div style="border-top:1px dashed var(--contour); padding:.3rem 0; display:flex; justify-content:space-between"><span class="kicker">residual</span><span>−9.4% · 22 active comps</span></div>
+      </div>
+    </div>
+    <span class="num">03 / 10</span>
+  </section>
+
+  <!-- Slide 4 -->
+  <section class="slide">
+    <span class="kicker">How it works · 7-signal scoring</span>
+    <h2 style="margin-top:.8rem">Every listing scored 0–100.</h2>
+    <pre style="margin-top:1rem">Sources  →  Normalize  →  Dedup  →  Listing store
+                                       │
+                                       ▼
+                       7-signal scoring  →  Match queue
+                       (comp residual + cut velocity         │
+                        + DOM context + listing quality      ▼
+                        + profile fit + freshness     Email · Telegram · iOS push
+                        + anomaly check)
+</pre>
+    <p>Heaviest weight (<strong>0.30</strong>) is comp-baseline residual; the other six prevent that one signal from being gamed.</p>
+    <span class="num">04 / 10</span>
+  </section>
+
+  <!-- Slide 5 -->
+  <section class="slide">
+    <span class="kicker">Coverage · 24 live · 60 by Q4</span>
+    <h2 style="margin-top:.8rem">Honest about both numbers.</h2>
+    <div class="grid-2" style="margin-top:1rem">
+      <div>
+        <p style="font-family:'IBM Plex Mono', monospace; font-size:.74rem; color:var(--graphite); letter-spacing:.1em; text-transform:uppercase">US · 12 cities</p>
+        <div style="display:flex; flex-wrap:wrap; gap:.4rem">
+          <span class="pill"><span class="dot"></span>Austin</span><span class="pill"><span class="dot"></span>San Antonio</span><span class="pill"><span class="dot"></span>Denver</span><span class="pill"><span class="dot"></span>Phoenix</span><span class="pill"><span class="dot"></span>Salt Lake</span><span class="pill"><span class="dot"></span>Raleigh</span><span class="pill"><span class="dot"></span>Charlotte</span><span class="pill"><span class="dot"></span>Tampa</span><span class="pill"><span class="dot"></span>Miami</span><span class="pill"><span class="dot"></span>Nashville</span><span class="pill"><span class="dot"></span>Boise</span><span class="pill"><span class="dot"></span>Portland</span>
+        </div>
+      </div>
+      <div>
+        <p style="font-family:'IBM Plex Mono', monospace; font-size:.74rem; color:var(--graphite); letter-spacing:.1em; text-transform:uppercase">EU · 12 cities</p>
+        <div style="display:flex; flex-wrap:wrap; gap:.4rem">
+          <span class="pill"><span class="dot"></span>Berlin</span><span class="pill"><span class="dot"></span>Lisbon</span><span class="pill"><span class="dot"></span>Madrid</span><span class="pill"><span class="dot"></span>Barcelona</span><span class="pill"><span class="dot"></span>Amsterdam</span><span class="pill"><span class="dot"></span>Prague</span><span class="pill"><span class="dot"></span>Vienna</span><span class="pill"><span class="dot"></span>Tallinn</span><span class="pill"><span class="dot"></span>Warsaw</span><span class="pill"><span class="dot"></span>Athens</span><span class="pill"><span class="dot"></span>Budapest</span><span class="pill"><span class="dot"></span>Sofia</span>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:1rem">A city goes live only when ≥ 3 source feeds cover it and dedup quality clears 93%. Half-coverage is worse than no coverage.</p>
+    <span class="num">05 / 10</span>
+  </section>
+
+  <!-- Slide 6 -->
+  <section class="slide">
+    <span class="kicker">Audience · ICP &amp; LTV</span>
+    <h2 style="margin-top:.8rem">Three personas. Two of them stick.</h2>
+    <table>
+      <thead><tr><th>Persona</th><th>Plan</th><th>Tenure</th><th>LTV</th></tr></thead>
+      <tbody>
+        <tr><td>Lena — relocator (rent + sale)</td><td>Multi-city $119</td><td>9–12 mo</td><td>$1.1k–$1.4k</td></tr>
+        <tr><td>Marco — RTR operator</td><td>Investor desk $349</td><td>18–36 mo</td><td>$4.2k–$6.3k</td></tr>
+        <tr><td>Anchor — single-city buyer</td><td>Single-city $39</td><td>1–4 mo</td><td>$80–$160</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:1rem">Anti-personas: weekend Zillow browsers, no-budget tire-kickers, MLS-licensed agents looking for a free MLS replacement.</p>
+    <span class="num">06 / 10</span>
+  </section>
+
+  <!-- Slide 7 -->
+  <section class="slide">
+    <span class="kicker">Pricing · NOWPayments hosted invoice</span>
+    <h2 style="margin-top:.8rem">Three tiers, no annual lock-in.</h2>
+    <div class="grid-3" style="margin-top:1rem">
+      <div style="border:1px solid var(--contour); padding:1.1rem; background:var(--bone)"><strong>Single-city</strong><div style="font-family:'Fraunces', serif; font-size:1.8rem; font-weight:600">$39</div><span class="kicker">1 city · sale OR rent</span></div>
+      <div style="border:1px solid var(--clay); padding:1.1rem; background:#f6efde"><strong>Multi-city ★</strong><div style="font-family:'Fraunces', serif; font-size:1.8rem; font-weight:600">$119</div><span class="kicker">5 cities · sale + rent</span></div>
+      <div style="border:1px solid var(--contour); padding:1.1rem; background:var(--bone)"><strong>Investor desk</strong><div style="font-family:'Fraunces', serif; font-size:1.8rem; font-weight:600">$349</div><span class="kicker">25 cities · API · 5 seats</span></div>
+    </div>
+    <p style="margin-top:1rem">Stablecoin (USDT / USDC) by default; card on-ramp where the NOWPayments partner network supports it. 30-day money-back. Cancel by replying "stop."</p>
+    <span class="num">07 / 10</span>
+  </section>
+
+  <!-- Slide 8 -->
+  <section class="slide">
+    <span class="kicker">Go-to-market · 90 days</span>
+    <h2 style="margin-top:.8rem">Three phases. No paid acquisition.</h2>
+    <table>
+      <thead><tr><th>Phase</th><th>Weeks</th><th>Key moves</th><th>Target</th></tr></thead>
+      <tbody>
+        <tr><td>Soft launch</td><td>1–4</td><td>Telegram channel + Reddit AMA + friends-and-family preview</td><td>10 paying subs</td></tr>
+        <tr><td>Public launch</td><td>5–8</td><td>2nd city batch + brokerage outbound test + first long-form</td><td>30 subs / $3k MRR</td></tr>
+        <tr><td>Scale-up</td><td>9–12</td><td>3rd city batch + podcast + "what we got wrong" post</td><td>80 subs / $8k MRR</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:1rem">Channels in priority: Reddit AMAs, Telegram public channel, RTR referral, Twitter voice, newsletter cross-posts, brokerage outbound, conferences.</p>
+    <span class="num">08 / 10</span>
+  </section>
+
+  <!-- Slide 9 -->
+  <section class="slide">
+    <span class="kicker">Roadmap</span>
+    <h2 style="margin-top:.8rem">From landing to multi-tenant operator desk.</h2>
+    <table>
+      <thead><tr><th>Wave</th><th>Quarter</th><th>Deliverable</th></tr></thead>
+      <tbody>
+        <tr><td>Wave 2 (now)</td><td>2026 Q2</td><td>Landing live, NOWPayments wired, 24 cities named.</td></tr>
+        <tr><td>Wave 3</td><td>Q3</td><td>open-saas dashboard, profile builder, queue UI, ingestion engine, sub-min rent cadence proven, iOS push beta.</td></tr>
+        <tr><td>Wave 4</td><td>Q4</td><td>60-city coverage, API GA, brokerage multi-seat, status-page + SLA-backed pricing.</td></tr>
+        <tr><td>Wave 5</td><td>2027</td><td>LATAM (MX, BR), Asia (TYO, SG) on selective opt-in.</td></tr>
+      </tbody>
+    </table>
+    <span class="num">09 / 10</span>
+  </section>
+
+  <!-- Slide 10 -->
+  <section class="slide">
+    <span class="kicker">Why now</span>
+    <h2 style="margin-top:.8rem">Four shifts opened the window.</h2>
+    <ol>
+      <li><strong>Brokerage IDX feeds</strong> are increasingly available to non-brokerage parties through partnership.</li>
+      <li><strong>Public-portal monitoring</strong> for personal use is in a stable legal/operational grey-zone — courts have repeatedly ruled in favor of read-only personal monitoring.</li>
+      <li><strong>Stablecoin-rail subscription billing</strong> finally works at scale — a global B2C real-estate-tech product was a tax problem 18 months ago and is not now.</li>
+      <li><strong>The relocation economy</strong> is at a multi-decade peak. Cross-city, cross-mode shopping is a category, not a niche.</li>
+    </ol>
+    <p style="font-family:'Fraunces', serif; font-size:1.4rem; color:var(--ink); margin-top:1rem">Skyline Watch sits exactly at the intersection of those four shifts.</p>
+    <p class="cite" style="margin-top:1.6rem">watch@prin7r.com · @SkylineWatchBot · github.com/prin7r-projects/real-estate-monitor</p>
+    <span class="num">10 / 10</span>
+  </section>
+
+</div>
+</body>
+</html>
