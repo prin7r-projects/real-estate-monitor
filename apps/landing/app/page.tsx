@@ -137,7 +137,7 @@ export default function Page() {
         <a href="#top" aria-label="Skyline Watch — home" style={{ display: "flex", alignItems: "center", gap: "0.7rem" }}>
           <Logo />
           <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-            <span style={{ fontFamily: "Fraunces, serif", fontSize: "1.2rem", fontWeight: 600, letterSpacing: "-0.01em" }}>
+            <span style={{ fontFamily: "DM Sans, Inter, sans-serif", fontSize: "1.2rem", fontWeight: 600, letterSpacing: "-0.01em" }}>
               Skyline Watch
             </span>
             <span className="kicker" style={{ marginTop: 4 }}>
@@ -442,7 +442,7 @@ export default function Page() {
           <div style={{ display: "flex", gap: "0.7rem", alignItems: "center" }}>
             <Logo />
             <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-              <span style={{ fontFamily: "Fraunces, serif", fontSize: "1.05rem", fontWeight: 600 }}>Skyline Watch</span>
+              <span style={{ fontFamily: "DM Sans, Inter, sans-serif", fontSize: "1.05rem", fontWeight: 600 }}>Skyline Watch</span>
               <span className="kicker" style={{ marginTop: 4 }}>
                 a Prin7r product · 2026
               </span>
@@ -502,7 +502,7 @@ function SampleAlertCard() {
         </span>
         <span className="kicker">SKW · LIS-08</span>
       </div>
-      <div style={{ fontFamily: "Fraunces, serif", fontSize: "1.25rem", fontWeight: 600, color: "var(--ink)", lineHeight: 1.2 }}>
+      <div style={{ fontFamily: "DM Sans, Inter, sans-serif", fontSize: "1.25rem", fontWeight: 600, color: "var(--ink)", lineHeight: 1.2 }}>
         Estrela · 1BR + study · 1,450 €/mo
       </div>
       <div style={{ color: "var(--graphite)", fontSize: "0.82rem", margin: "0.25rem 0 1rem" }}>
@@ -557,7 +557,7 @@ function SecondaryAlertCard() {
         </span>
         <span className="kicker">SKW · AUS-03</span>
       </div>
-      <div style={{ fontFamily: "Fraunces, serif", fontSize: "1.18rem", fontWeight: 600, color: "var(--ink)", lineHeight: 1.2 }}>
+      <div style={{ fontFamily: "DM Sans, Inter, sans-serif", fontSize: "1.18rem", fontWeight: 600, color: "var(--ink)", lineHeight: 1.2 }}>
         Mueller · 3BR/2BA SFH · $649,000 ↓ from $673,000
       </div>
       <div style={{ color: "var(--graphite)", fontSize: "0.82rem", margin: "0.25rem 0 1rem" }}>
