@@ -1,18 +1,36 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Skyline Watch — Wave 2 design refresh 2026-05-08
+ * Reference: officevibe (Electric Data Flow)
+ * Theme: light · structured approachable canvas where sharp insights meet soft edges
+ * Token NAMES preserved (bone/clay/sage/ink/graphite/haze/contour/watch)
+ * for page-level continuity; values remapped from topographic terra-cotta
+ * palette → Brand-Electric blue + Boardroom-Navy + Soft Off-White.
+ * Display face: DM Sans (substitute for ABC Favorit Variable per ref).
+ */
 :root {
-  --bone: #FAFAF8;
-  --haze: #ECEAE5;
-  --contour: #a39a82;
-  --sage: #5e7263;
-  --sage-deep: #3f4f44;
-  --clay: #c8794d;
-  --clay-deep: #9c5a36;
-  --ink: #1b1f1c;
-  --graphite: #4b5050;
-  --watch: #1f2a23;
+  /* Surfaces — Soft Off-White canvas with electric-data accents */
+  --bone: #F9F8F6;            /* surface-0 (Soft Off-White) */
+  --haze: #EAEBF8;            /* surface-1 (Light Cool Gray) */
+  --contour: #CCCCCC;         /* line work / hairline dividers (Input Border Gray) */
+
+  /* Brand pigments — single electric blue + a navy anchor */
+  --sage: #0C1754;            /* primary heading / Boardroom Navy */
+  --sage-deep: #171417;       /* Pitch Black */
+  --clay: #2545FF;            /* Brand Electric — the alert/CTA pigment */
+  --clay-deep: #1A2EBC;       /* Brand Electric darker (hover) */
+
+  /* Ink */
+  --ink: #171417;             /* Pitch Black */
+  --graphite: #222222;        /* Medium Gray (secondary text) */
+
+  /* Dark panel — Boardroom Navy */
+  --watch: #0C1754;
 }
 
 html,
@@ -22,12 +40,12 @@ body {
   font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "ss01" on, "cv02" on;
+  font-feature-settings: "ss01" on, "ss04" on;
 }
 
 ::selection {
   background: var(--clay);
-  color: var(--bone);
+  color: #ffffff;
 }
 
 a:focus-visible,
@@ -37,30 +55,26 @@ button:focus-visible {
   border-radius: 2px;
 }
 
-/* ============== TOPO BACKGROUND ============== */
+/* ============== TOPO BACKGROUND → ELECTRIC DATA FLOW ============== */
+/* The topographic-map texture is replaced with a softer Electric Data
+   Flow background: very faint Lilac-Accent radial wash + a fine grid
+   that reads as the data substrate, not a topographic map. */
 .topo-bg {
   background-color: var(--bone);
   background-image:
-    radial-gradient(circle at 20% 30%, rgba(94, 114, 99, 0.08) 0, transparent 28%),
-    radial-gradient(circle at 80% 70%, rgba(200, 121, 77, 0.06) 0, transparent 28%),
-    repeating-radial-gradient(
-      circle at 0% 50%,
-      transparent 0,
-      transparent 38px,
-      rgba(163, 154, 130, 0.18) 38px,
-      rgba(163, 154, 130, 0.18) 39px
-    );
+    radial-gradient(circle at 20% 30%, rgba(217, 212, 255, 0.55) 0, transparent 32%),
+    radial-gradient(circle at 80% 70%, rgba(37, 69, 255, 0.06) 0, transparent 32%);
 }
 
 .topo-grid {
   background-image:
-    linear-gradient(to right, rgba(163, 154, 130, 0.16) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(163, 154, 130, 0.16) 1px, transparent 1px);
+    linear-gradient(to right, rgba(12, 23, 84, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(12, 23, 84, 0.06) 1px, transparent 1px);
   background-size: 64px 64px;
 }
 
 .dark-panel {
-  background: linear-gradient(160deg, var(--watch) 0%, #182219 100%);
+  background: linear-gradient(160deg, var(--watch) 0%, #1c2a78 100%);
   color: var(--bone);
 }
 
@@ -68,9 +82,9 @@ button:focus-visible {
 .ticker-wrap {
   position: relative;
   overflow: hidden;
-  border-top: 1px solid rgba(239, 232, 218, 0.16);
-  border-bottom: 1px solid rgba(239, 232, 218, 0.16);
-  background: rgba(0, 0, 0, 0.24);
+  border-top: 1px solid rgba(234, 235, 248, 0.3);
+  border-bottom: 1px solid rgba(234, 235, 248, 0.3);
+  background: rgba(12, 23, 84, 0.92);
 }
 
 .ticker-track {
@@ -82,12 +96,8 @@ button:focus-visible {
 }
 
 @keyframes tickerScroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .ticker-item {
@@ -95,7 +105,7 @@ button:focus-visible {
   font-size: 0.72rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: rgba(239, 232, 218, 0.78);
+  color: rgba(249, 248, 246, 0.78);
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -111,29 +121,29 @@ button:focus-visible {
 }
 
 .ticker-item .green-dot {
-  background: #7eaa86;
-  box-shadow: 0 0 6px #7eaa86;
+  background: #2EB04A;
+  box-shadow: 0 0 6px #2EB04A;
 }
 
 /* ============== ALERT CARD (HERO) ============== */
 .alert-card {
-  background: var(--bone);
+  background: #ffffff;
   border: 1px solid var(--contour);
-  border-radius: 4px;
+  border-radius: 16px; /* per officevibe: cards 16px */
   padding: 1.5rem;
   position: relative;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 0.84rem;
   color: var(--ink);
-  box-shadow: 0 16px 40px -32px rgba(27, 31, 28, 0.3);
+  box-shadow: 0 16px 40px -32px rgba(12, 23, 84, 0.18);
 }
 
 .alert-card::before {
   content: "";
   position: absolute;
   inset: 4px;
-  border: 1px solid rgba(163, 154, 130, 0.32);
-  border-radius: 2px;
+  border: 1px solid rgba(234, 235, 248, 0.7);
+  border-radius: 12px;
   pointer-events: none;
 }
 
@@ -141,7 +151,7 @@ button:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px dashed rgba(75, 80, 80, 0.22);
+  border-bottom: 1px dashed rgba(204, 204, 204, 0.6);
   padding: 0.45rem 0;
 }
 
@@ -170,27 +180,22 @@ button:focus-visible {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   background: var(--clay);
-  color: var(--bone);
+  color: #ffffff;
   padding: 0.25rem 0.55rem;
-  border-radius: 2px;
+  border-radius: 100px;
 }
 
 .alert-stamp .pulse {
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: var(--bone);
+  background: #ffffff;
   animation: pulse 1.6s ease-in-out infinite;
 }
 
 @keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
 }
 
 /* ============== SCORE BAR ============== */
@@ -198,7 +203,7 @@ button:focus-visible {
   display: flex;
   height: 6px;
   background: var(--haze);
-  border-radius: 1px;
+  border-radius: 100px;
   overflow: hidden;
 }
 
@@ -212,10 +217,10 @@ button:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: var(--ink);
-  color: var(--bone);
+  background: var(--sage);
+  color: #ffffff;
   padding: 0.2rem 0.6rem;
-  border-radius: 2px;
+  border-radius: 100px;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 0.7rem;
   letter-spacing: 0.06em;
@@ -223,15 +228,15 @@ button:focus-visible {
 
 .score-pill .score-num {
   font-weight: 700;
-  color: var(--clay);
+  color: #FFC13A; /* feedback yellow accent */
 }
 
 /* ============== TAB SWITCH ============== */
 .split-tabs {
   display: inline-flex;
   background: var(--haze);
-  border: 1px solid var(--contour);
-  border-radius: 999px;
+  border: 1px solid transparent;
+  border-radius: 100px;
   padding: 4px;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 0.74rem;
@@ -241,14 +246,14 @@ button:focus-visible {
 
 .split-tabs button {
   padding: 0.5rem 1.1rem;
-  border-radius: 999px;
+  border-radius: 100px;
   color: var(--graphite);
   transition: all 0.18s ease;
 }
 
 .split-tabs button[aria-selected="true"] {
-  background: var(--ink);
-  color: var(--bone);
+  background: var(--sage);
+  color: #ffffff;
 }
 
 .split-tabs button:hover {
@@ -258,18 +263,18 @@ button:focus-visible {
 /* ============== PRICING ============== */
 .tier-card {
   border: 1px solid var(--contour);
-  background: var(--bone);
+  background: #ffffff;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-  border-radius: 3px;
+  border-radius: 16px;
   position: relative;
 }
 
 .tier-card.featured {
   border-color: var(--clay);
-  background: linear-gradient(180deg, var(--bone) 0%, #f6efde 100%);
+  background: linear-gradient(180deg, #ffffff 0%, var(--haze) 100%);
 }
 
 .tier-card.featured::before {
@@ -278,33 +283,35 @@ button:focus-visible {
   top: -10px;
   right: 1.2rem;
   background: var(--clay);
-  color: var(--bone);
+  color: #ffffff;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 0.66rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding: 0.18rem 0.6rem;
-  border-radius: 2px;
+  border-radius: 100px;
 }
 
 .tier-card .tier-name {
-  font-family: "Fraunces", "Source Serif 4", serif;
+  font-family: "DM Sans", "Inter", sans-serif;
   font-weight: 600;
   font-size: 1.35rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  color: var(--sage);
 }
 
 .tier-card .tier-price {
   display: flex;
   align-items: baseline;
   gap: 0.4rem;
-  font-family: "Fraunces", "Source Serif 4", serif;
+  font-family: "DM Sans", "Inter", sans-serif;
 }
 
 .tier-card .tier-price .amount {
   font-size: 2.6rem;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.05em;
+  color: var(--sage);
 }
 
 .tier-card .tier-price .unit {
@@ -335,24 +342,25 @@ button:focus-visible {
 }
 
 .tier-cta {
-  border: 1px solid var(--ink);
-  background: var(--ink);
-  color: var(--bone);
-  padding: 0.85rem 1.1rem;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  border: 1px solid var(--clay);
+  background: var(--clay);
+  color: #ffffff;
+  padding: 0.7rem 2rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  font-weight: 500;
   text-align: center;
   cursor: pointer;
-  border-radius: 2px;
+  border-radius: 100px;
   transition: all 0.18s ease;
   width: 100%;
 }
 
 .tier-cta:hover {
-  background: var(--clay);
-  border-color: var(--clay);
+  background: var(--clay-deep);
+  border-color: var(--clay-deep);
 }
 
 .tier-cta:disabled {
@@ -362,7 +370,13 @@ button:focus-visible {
 
 .tier-cta.ghost {
   background: transparent;
-  color: var(--ink);
+  color: var(--clay);
+  border: 1px solid var(--clay);
+}
+
+.tier-cta.ghost:hover {
+  background: var(--haze);
+  color: var(--clay-deep);
 }
 
 /* ============== FAQ ============== */
@@ -376,12 +390,12 @@ button:focus-visible {
 }
 
 .faq-q {
-  font-family: "Fraunces", "Source Serif 4", serif;
+  font-family: "DM Sans", "Inter", sans-serif;
   font-size: 1.18rem;
   font-weight: 500;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   margin-bottom: 0.55rem;
-  color: var(--ink);
+  color: var(--sage);
 }
 
 .faq-a {
@@ -422,14 +436,16 @@ button:focus-visible {
 }
 
 .headline {
-  font-family: "Fraunces", "Source Serif 4", serif;
+  font-family: "DM Sans", "Inter", sans-serif;
   font-weight: 500;
-  letter-spacing: -0.025em;
-  color: var(--ink);
+  letter-spacing: -0.05em;
+  color: var(--sage);
 }
 
 .serif-italic {
-  font-family: "Fraunces", serif;
+  /* Refresh: drop serif italic — Electric Data Flow uses sans throughout.
+     Keep the class for backwards compatibility but render as Inter italic. */
+  font-family: "Inter", sans-serif;
   font-style: italic;
 }
 
@@ -439,8 +455,8 @@ button:focus-visible {
   color: var(--ink);
   border: 1px solid var(--contour);
   padding: 0.42rem 0.72rem;
-  border-radius: 2px;
-  background: var(--bone);
+  border-radius: 100px;
+  background: #ffffff;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
@@ -449,7 +465,7 @@ button:focus-visible {
 .coverage-mark .mark-dot {
   width: 6px;
   height: 6px;
-  border-radius: 1px;
+  border-radius: 99px;
   background: var(--sage);
 }
 
@@ -506,8 +522,8 @@ button:focus-visible {
 .channel-card {
   border: 1px solid var(--contour);
   padding: 1.4rem;
-  background: var(--bone);
-  border-radius: 3px;
+  background: #ffffff;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
