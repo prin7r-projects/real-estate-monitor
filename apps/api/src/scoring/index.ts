@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { listings, matches, profiles, type Listing, type Profile } from '../db/schema';
-import { eq, and, gte, desc, sql } from 'drizzle-orm';
+import { eq, and, gte, desc, sql, avg, stddev, count } from 'drizzle-orm';
 
 export interface ScoreSignals {
   residual: number;      // Price vs comp baseline
@@ -16,6 +16,16 @@ export interface ScoredListing {
   listing: Listing;
   score: number;
   signals: ScoreSignals;
+  threshold: number;
+  isMatch: boolean;
+}
+
+export interface CompBaseline {
+  median: number;
+  mad: number;
+  mean: number;
+  stddev: number;
+  count: number;
 }
 
 export class ScoringEngine {
@@ -28,6 +38,8 @@ export class ScoringEngine {
     freshness: 0.10,
     anomaly: 0.10,
   };
+
+  private matchThreshold: number = 0.7;
 
   async scoreListing(listing: Listing, profile: Profile): Promise<ScoredListing | null> {
     // Check hard filters first
@@ -54,10 +66,14 @@ export class ScoringEngine {
       return total + (signals[key as keyof ScoreSignals] * weight);
     }, 0);
 
+    const roundedScore = Math.round(score * 100) / 100;
+
     return {
       listing,
-      score: Math.round(score * 100) / 100,
+      score: roundedScore,
       signals,
+      threshold: this.matchThreshold,
+      isMatch: roundedScore >= this.matchThreshold,
     };
   }
 
@@ -88,15 +104,42 @@ export class ScoringEngine {
     return true;
   }
 
-  private async calculateCompBaseline(listing: Listing): Promise<{ median: number; mad: number }> {
+  async calculateCompBaseline(listing: Listing): Promise<CompBaseline> {
     // Get 30-day comparable listings
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const comps = await db
+    const stats = await db
       .select({
-        priceCents: listings.priceCents,
+        avg: avg(listings.priceCents),
+        stddev: stddev(listings.priceCents),
+        count: count(listings.id),
       })
+      .from(listings)
+      .where(
+        and(
+          eq(listings.city, listing.city),
+          eq(listings.side, listing.side),
+          gte(listings.publishedAt, thirtyDaysAgo),
+          sql`${listings.id} != ${listing.id}`
+        )
+      );
+
+    const result = stats[0];
+    
+    if (!result || result.count === 0) {
+      return {
+        median: listing.priceCents,
+        mad: 0,
+        mean: listing.priceCents,
+        stddev: 0,
+        count: 0,
+      };
+    }
+
+    // Calculate median and MAD
+    const prices = await db
+      .select({ priceCents: listings.priceCents })
       .from(listings)
       .where(
         and(
@@ -108,42 +151,85 @@ export class ScoringEngine {
       )
       .orderBy(listings.priceCents);
 
-    if (comps.length === 0) {
-      return { median: listing.priceCents, mad: 0 };
-    }
+    const priceValues = prices.map(p => p.priceCents);
+    const median = this.calculateMedian(priceValues);
+    const mad = this.calculateMAD(priceValues, median);
 
-    const prices = comps.map(c => c.priceCents);
-    const median = this.calculateMedian(prices);
-    const mad = this.calculateMAD(prices, median);
-
-    return { median, mad };
+    return {
+      median,
+      mad,
+      mean: Number(result.avg) || listing.priceCents,
+      stddev: Number(result.stddev) || 0,
+      count: Number(result.count) || 0,
+    };
   }
 
   private calculateMedian(values: number[]): number {
+    if (values.length === 0) return 0;
+    
     const sorted = [...values].sort((a, b) => a - b);
     const mid = Math.floor(sorted.length / 2);
     return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
   }
 
   private calculateMAD(values: number[], median: number): number {
+    if (values.length === 0) return 0;
+    
     const deviations = values.map(v => Math.abs(v - median));
     return this.calculateMedian(deviations);
   }
 
-  private calculateResidual(listing: Listing, comp: { median: number; mad: number }): number {
+  private calculateResidual(listing: Listing, comp: CompBaseline): number {
     if (comp.mad === 0) return 0.5;
     
     const residual = (listing.priceCents - comp.median) / comp.mad;
     
     // Negative residual = underpriced = higher score
     // Normalize to 0-1 range
-    return Math.max(0, Math.min(1, 0.5 - residual * 0.1));
+    const score = 0.5 - residual * 0.1;
+    return Math.max(0, Math.min(1, score));
   }
 
   private async calculateVelocity(listing: Listing): Promise<number> {
     // Check for price cuts in history
-    // For now, return a default score
-    return 0.5;
+    // Look for listings with same fingerprint but lower price
+    const priceHistory = await db
+      .select({
+        priceCents: listings.priceCents,
+        publishedAt: listings.publishedAt,
+      })
+      .from(listings)
+      .where(
+        and(
+          eq(listings.fingerprint, listing.fingerprint),
+          sql`${listings.id} != ${listing.id}`
+        )
+      )
+      .orderBy(desc(listings.publishedAt))
+      .limit(5);
+
+    if (priceHistory.length === 0) {
+      return 0.5; // No history
+    }
+
+    // Check for price cuts
+    let priceCuts = 0;
+    let totalCuts = 0;
+
+    for (let i = 0; i < priceHistory.length; i++) {
+      if (priceHistory[i].priceCents < listing.priceCents) {
+        priceCuts++;
+        totalCuts += (listing.priceCents - priceHistory[i].priceCents) / listing.priceCents;
+      }
+    }
+
+    if (priceCuts === 0) return 0.5;
+
+    // Higher velocity = more aggressive cuts = higher score
+    const avgCut = totalCuts / priceCuts;
+    const velocity = Math.min(1, avgCut * 10); // Scale up
+    
+    return velocity;
   }
 
   private calculateDOM(listing: Listing): number {
@@ -162,20 +248,17 @@ export class ScoringEngine {
   private calculateQuality(listing: Listing): number {
     let score = 0.5;
     
-    // Has photos (placeholder)
-    score += 0.1;
-    
-    // Has description (placeholder)
-    score += 0.1;
-    
     // Has sqm
-    if (listing.sqm) score += 0.1;
+    if (listing.sqm && listing.sqm > 0) score += 0.15;
     
     // Has bedrooms
-    if (listing.bedrooms) score += 0.1;
+    if (listing.bedrooms && listing.bedrooms > 0) score += 0.15;
     
     // Has address
-    if (listing.addressNorm) score += 0.1;
+    if (listing.addressNorm && listing.addressNorm.length > 0) score += 0.1;
+    
+    // Has location (PostGIS point)
+    if (listing.location) score += 0.1;
     
     return Math.min(1, score);
   }
@@ -204,6 +287,19 @@ export class ScoringEngine {
       factors++;
     }
 
+    // SQM fit (if available)
+    if (listing.sqm && profile.extras && typeof profile.extras === 'object') {
+      const extras = profile.extras as Record<string, unknown>;
+      if (extras.minSqm && typeof extras.minSqm === 'number') {
+        if (listing.sqm >= extras.minSqm) {
+          score += 1;
+        } else {
+          score += 0.3;
+        }
+        factors++;
+      }
+    }
+
     return factors > 0 ? score / factors : 0.5;
   }
 
@@ -225,8 +321,27 @@ export class ScoringEngine {
     // - Descending prices
     // - Unusual patterns
     
-    // For now, return a default score
-    return 0.5;
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Count how many times this listing has been seen
+    const listingCount = await db
+      .select({ count: count(listings.id) })
+      .from(listings)
+      .where(
+        and(
+          eq(listings.fingerprint, listing.fingerprint),
+          gte(listings.publishedAt, thirtyDaysAgo)
+        )
+      );
+
+    const countValue = listingCount[0]?.count || 0;
+    
+    // More appearances = higher anomaly score
+    if (countValue >= 5) return 1.0;  // Very suspicious
+    if (countValue >= 3) return 0.8;  // Anomaly
+    if (countValue >= 2) return 0.6;  // Noteworthy
+    return 0.5; // Normal
   }
 
   async findMatchesForProfile(profile: Profile): Promise<ScoredListing[]> {
@@ -247,11 +362,78 @@ export class ScoringEngine {
 
     for (const listing of recentListings) {
       const scored = await this.scoreListing(listing, profile);
-      if (scored && scored.score >= 0.7) { // Threshold for matches
+      if (scored && scored.isMatch) {
         matches.push(scored);
       }
     }
 
     return matches.sort((a, b) => b.score - a.score);
+  }
+
+  async createMatch(scored: ScoredListing, profileId: string): Promise<void> {
+    // Check if match already exists
+    const existing = await db
+      .select({ id: matches.id })
+      .from(matches)
+      .where(
+        and(
+          eq(matches.profileId, profileId),
+          eq(matches.listingId, scored.listing.id)
+        )
+      )
+      .limit(1);
+
+    if (existing.length > 0) {
+      return; // Match already exists
+    }
+
+    // Create new match
+    await db.insert(matches).values({
+      profileId,
+      listingId: scored.listing.id,
+      score: scored.score,
+      signals: scored.signals,
+      matchedAt: new Date(),
+    });
+  }
+
+  async processNewListing(listing: Listing): Promise<void> {
+    // Get all active profiles for this city
+    const activeProfiles = await db
+      .select()
+      .from(profiles)
+      .where(
+        and(
+          eq(profiles.city, listing.city),
+          eq(profiles.status, 'active')
+        )
+      );
+
+    console.log(`[SKYLINE_SCORE] Processing listing ${listing.id} against ${activeProfiles.length} profiles`);
+
+    for (const profile of activeProfiles) {
+      const scored = await this.scoreListing(listing, profile);
+      
+      if (scored && scored.isMatch) {
+        await this.createMatch(scored, profile.id);
+        console.log(`[SKYLINE_SCORE] Match found: listing ${listing.id} -> profile ${profile.id} (score: ${scored.score})`);
+      }
+    }
+  }
+
+  setMatchThreshold(threshold: number): void {
+    this.matchThreshold = Math.max(0, Math.min(1, threshold));
+  }
+
+  getMatchThreshold(): number {
+    return this.matchThreshold;
+  }
+
+  setWeights(weights: Partial<Record<keyof ScoreSignals, number>>): void {
+    this.weights = { ...this.weights, ...weights };
+  }
+
+  getWeights(): Record<keyof ScoreSignals, number> {
+    return { ...this.weights };
   }
 }

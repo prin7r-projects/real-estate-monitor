@@ -5,6 +5,7 @@ import { logger } from 'hono/logger';
 import { profilesRouter } from './routes/profiles';
 import { matchesRouter } from './routes/matches';
 import { sourcesRouter } from './routes/sources';
+import { scoringRouter } from './routes/scoring';
 import { healthRouter } from './routes/health';
 import { PollerManager } from './pollers/manager';
 
@@ -27,6 +28,7 @@ app.route('/api', healthRouter);
 app.route('/api/v1', profilesRouter);
 app.route('/api/v1', matchesRouter);
 app.route('/api/v1', sourcesRouter);
+app.route('/api/v1', scoringRouter);
 
 // Root route
 app.get('/', (c) => {
