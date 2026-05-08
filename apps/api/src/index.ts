@@ -6,6 +6,7 @@ import { profilesRouter } from './routes/profiles';
 import { matchesRouter } from './routes/matches';
 import { sourcesRouter } from './routes/sources';
 import { scoringRouter } from './routes/scoring';
+import { deliveryRouter } from './routes/delivery';
 import { healthRouter } from './routes/health';
 import { PollerManager } from './pollers/manager';
 
@@ -29,6 +30,7 @@ app.route('/api/v1', profilesRouter);
 app.route('/api/v1', matchesRouter);
 app.route('/api/v1', sourcesRouter);
 app.route('/api/v1', scoringRouter);
+app.route('/api/v1', deliveryRouter);
 
 // Root route
 app.get('/', (c) => {
