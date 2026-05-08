@@ -223,6 +223,12 @@ page AdminSettingsPage {
   component: import AdminSettings from "@src/admin/elements/settings/SettingsPage"
 }
 
+route AdminSourcesRoute { path: "/admin/sources", to: AdminSourcesPage }
+page AdminSourcesPage {
+  authRequired: true,
+  component: import AdminSources from "@src/admin/dashboards/sources/SourcesDashboardPage"
+}
+
 route NotFoundRoute { path: "*", to: NotFoundPage }
 page NotFoundPage {
   component: import { NotFoundPage } from "@src/client/components/NotFoundPage"

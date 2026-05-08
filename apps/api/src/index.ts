@@ -6,6 +6,7 @@ import { profilesRouter } from './routes/profiles';
 import { matchesRouter } from './routes/matches';
 import { sourcesRouter } from './routes/sources';
 import { healthRouter } from './routes/health';
+import { PollerManager } from './pollers/manager';
 
 const app = new Hono();
 
@@ -36,6 +37,9 @@ app.get('/', (c) => {
   });
 });
 
+// Initialize poller manager
+const pollerManager = new PollerManager();
+
 // Start server
 const port = parseInt(process.env.PORT || '3001');
 console.log(`[SKYLINE_API] Starting server on port ${port}`);
@@ -46,3 +50,27 @@ serve({
 });
 
 console.log(`[SKYLINE_API] Server running at http://localhost:${port}`);
+
+// Start pollers after server is running
+if (process.env.START_POLLERS !== 'false') {
+  console.log('[SKYLINE_API] Starting poller manager...');
+  pollerManager.startAll().catch((error) => {
+    console.error('[SKYLINE_API] Failed to start pollers:', error);
+  });
+}
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('[SKYLINE_API] Shutting down...');
+  await pollerManager.stopAll();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  console.log('[SKYLINE_API] Shutting down...');
+  await pollerManager.stopAll();
+  process.exit(0);
+});
+
+// Export for use in routes
+export { pollerManager };
