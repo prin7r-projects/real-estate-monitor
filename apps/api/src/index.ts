@@ -7,6 +7,7 @@ import { matchesRouter } from './routes/matches';
 import { sourcesRouter } from './routes/sources';
 import { scoringRouter } from './routes/scoring';
 import { deliveryRouter } from './routes/delivery';
+import { exportRouter } from './routes/export';
 import { healthRouter } from './routes/health';
 import { PollerManager } from './pollers/manager';
 
@@ -31,6 +32,7 @@ app.route('/api/v1', matchesRouter);
 app.route('/api/v1', sourcesRouter);
 app.route('/api/v1', scoringRouter);
 app.route('/api/v1', deliveryRouter);
+app.route('/api/v1', exportRouter);
 
 // Root route
 app.get('/', (c) => {
