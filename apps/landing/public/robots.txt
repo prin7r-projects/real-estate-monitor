@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://real-estate-monitor.prin7r.com/sitemap.xml
