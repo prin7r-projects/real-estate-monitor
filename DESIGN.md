@@ -31,13 +31,15 @@ free MLS replacement (we are not an MLS).
 - No stock photography of city skylines (the *one* exception we explicitly forbid for this brand).
 - No "your home, simplified" tagline pattern. We are not a homebuying coach.
 
-**What it is.** A bone-coloured topo map crossed with a market-watch terminal. The screen reads
-like a back office, not a portal: hairline contours, a live ticker of alert-feed glyphs, listing cards
-that look like printed deal sheets with sodium-yellow `MATCHED 47s AGO` stamps.
+**What it is — Wave 2 design refresh (2026-05-08).** An Electric Data Flow canvas (lifted from
+`officevibe`) crossed with a market-watch terminal. The screen reads like a structured insights
+operator surface, not a portal: a Soft Off-White canvas (`#F9F8F6`), Boardroom-Navy (`#0C1754`)
+typography for headings, a single Brand-Electric blue (`#2545FF`) accent for alert stamps and CTAs,
+softly-rounded `16px` cards with subtle shadows, and the live ticker now rendered against a navy
+panel. The previous topographic-map / sage-and-clay terra-cotta direction has been retired.
 
-Reference temperaments (not visual copies): Bloomberg terminal end-of-day pages, Architecture for
-Humanity field reports, USGS topo overlays, Fraunces sample books, the "deal sheet" margin
-typography of mid-century real-estate trade journals.
+Reference temperament: officevibe's Electric Data Flow — sharp insights meet soft edges,
+generous pill buttons (100px radius), and a single confident accent pigment.
 
 ## 3. ShadCN baseline and local component policy
 
@@ -60,35 +62,45 @@ prin7r-baseline ShadCN rule, narrowly scoped:
 
 ## 4. Color tokens
 
+Lifted 2026-05-08 from `design-references/officevibe.md`. Token NAMES preserved from the v1
+topographic palette (so existing `page.tsx` / `alert-ticker.tsx` / `split-modes.tsx` /
+`pricing-cta.tsx` keep rendering); VALUES remapped to the Electric Data Flow palette.
+
 ```
---bone:        #FAFAF8   # surface-0 (paper)
---haze:        #ECEAE5   # surface-1 (alt section)
---contour:     #A39A82   # divider · hairline · 1px lines
---sage:        #5E7263   # primary line work · topo
---sage-deep:   #3F4F44   # darker sage variant
---clay:        #C8794D   # alert/signal · "MATCHED 47s" · primary CTA
---clay-deep:   #9C5A36   # error / cut velocity
---ink:         #1B1F1C   # primary text · masthead background
---graphite:    #4B5050   # body-secondary · muted
---watch:       #1F2A23   # dark panel (ticker bg, dark gradients)
+--bone:        #F9F8F6   # surface-0 (Soft Off-White canvas)
+--haze:        #EAEBF8   # surface-1 (Light Cool Gray — badge / alt section)
+--contour:     #CCCCCC   # divider · hairline · Input Border Gray
+--sage:        #0C1754   # primary heading / Boardroom Navy
+--sage-deep:   #171417   # Pitch Black variant
+--clay:        #2545FF   # Brand Electric · alert stamp · primary CTA · accent
+--clay-deep:   #1A2EBC   # Brand Electric darker (hover)
+--ink:         #171417   # primary text · masthead text
+--graphite:    #222222   # body-secondary · muted (Medium Gray)
+--watch:       #0C1754   # dark panel · Boardroom Navy
 ```
 
-Contrast: `--ink` on `--bone` ≈ 13.5:1 (WCAG AAA). `--bone` on `--clay` ≈ 4.6:1 (AA for non-large
-text). `--bone` on `--ink` ≈ 13.5:1.
+Contrast: `--ink` on `--bone` ≈ 16:1 (WCAG AAA). `#FFFFFF` on `--clay` ≈ 5.4:1 (AA at ≥14px).
+`--bone` on `--watch` ≈ 14.6:1.
 
 ## 5. Typography
 
+Wave 2 design refresh (2026-05-08) — display face swapped from Fraunces serif → **DM Sans**
+(public-CDN substitute for ABC Favorit Variable in `officevibe`'s reference recipe). Inter and
+IBM Plex Mono retained.
+
 | Family | Role | Source |
 |---|---|---|
-| **Fraunces** (300–700, italic; opsz 9–144) | Display headlines, alert headlines, tier names, FAQ questions | Google Fonts |
-| **Inter** (300–700) | Body, descriptions, navigation | Google Fonts |
-| **IBM Plex Mono** (400–600) | Ticker, kicker labels, signal weights, alert metadata | Google Fonts |
+| **DM Sans** (400–700, OpenType `ss01`/`ss04`) | Display headlines, tier names, FAQ questions, large alert headlines | Google Fonts (substitute for ABC Favorit Variable) |
+| **Inter** (300–700) | Body, descriptions, navigation, CTAs | Google Fonts |
+| **IBM Plex Mono** (400–600) | Ticker, kicker labels, signal weights, alert metadata, score pills | Google Fonts |
 
 Headline scale: `clamp(2.4rem, 5.4vw, 4.6rem)` for hero · `clamp(1.8rem, 3.4vw, 2.8rem)` for
 section H2 · `1.05rem`–`1.3rem` for in-card titles. Body is `1rem` Inter at 1.55 line-height.
+Display headlines tighten to `letter-spacing: -0.05em` at 40px+ per the reference.
 
-Editorial italic moments &mdash; `<span class="serif-italic">forty-seven seconds</span>` &mdash; inherited from
-mid-century trade journals, never used decoratively, only for the editorial pause.
+The previous editorial-italic moments (`<span class="serif-italic">…</span>`) are retained as a
+class for backwards compatibility but now render as Inter italic, not Fraunces — the Electric
+Data Flow direction is sans-throughout.
 
 ## 6. Spacing, radius, shadows, and borders
 
@@ -212,6 +224,15 @@ No paid UI libraries. No tracking SDKs. No analytics on the marketing surface in
 
 ## 15. Changelog
 
+- **2026-05-08 — Wave 2 design refresh — palette + typography lifted from `officevibe` (Electric
+  Data Flow).** Direction shifted from topographic-map terra-cotta + sage to Electric Data Flow:
+  Soft Off-White canvas (`#F9F8F6`), Boardroom-Navy (`#0C1754`) headings, Brand-Electric
+  (`#2545FF`) accent for alert stamps and CTAs, Light-Cool-Gray (`#EAEBF8`) badge surface.
+  Display face swapped Fraunces serif → DM Sans (public-CDN substitute for ABC Favorit
+  Variable). Card radius increased from 2-3px → 16px; button radius from 2px → 100px pill
+  (officevibe's signature). Token NAMES preserved (bone/clay/sage/ink/graphite/haze/contour/watch)
+  so existing `page.tsx`, `alert-ticker.tsx`, `split-modes.tsx`, `pricing-cta.tsx` keep rendering
+  without code changes — only values remapped.
 - **2026-05-08 — Wave 2 initial build.** Brand identity (topo-map technical: sage + clay + ink;
   Fraunces + Inter + IBM Plex Mono). Landing structure across 9 sections. Sale-vs-Rent split-tab.
   NOWPayments hosted-invoice + IPN webhook (HMAC-SHA512). Three-tier pricing
