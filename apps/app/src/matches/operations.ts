@@ -1,5 +1,5 @@
 import { HttpError } from 'wasp/server';
-import type { GetMatches, GetMatchDetail } from 'wasp/server/operations';
+import type { GetMatches } from 'wasp/server/operations';
 import type { Match, Profile, Listing } from 'wasp/entities';
 
 export const getMatches: GetMatches<
@@ -28,27 +28,4 @@ export const getMatches: GetMatches<
     orderBy: { matchedAt: 'desc' },
     take: 100,
   });
-};
-
-export const getMatchDetail: GetMatchDetail<
-  { id: string },
-  Match & { profile: Profile; listing: Listing }
-> = async (args, context) => {
-  if (!context.user) {
-    throw new HttpError(401, 'Not authenticated');
-  }
-
-  const match = await context.entities.Match.findFirst({
-    where: {
-      id: args.id,
-      profile: { userId: context.user.id },
-    },
-    include: { profile: true, listing: true },
-  });
-
-  if (!match) {
-    throw new HttpError(404, 'Match not found');
-  }
-
-  return match;
 };

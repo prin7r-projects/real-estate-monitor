@@ -9,19 +9,25 @@ generator client {
 }
 
 model User {
-  id             String   @id @default(uuid())
-  createdAt      DateTime @default(now())
-  email          String?  @unique
-  tgChatId       String?  @unique
-  tz             String   @default("UTC")
-  isAdmin        Boolean  @default(false)
+  id                        String          @id @default(uuid())
+  createdAt                 DateTime        @default(now())
 
-  subscriptionStatus String? // 'active', 'cancel_at_period_end', 'past_due', 'deleted'
-  subscriptionPlan   String? // 'watch', 'deep_watch'
-  datePaid           DateTime?
+  email                     String?         @unique
+  username                  String?         @unique
+  tgChatId                  String?         @unique
+  tz                        String          @default("UTC")
+  isAdmin                   Boolean         @default(false)
 
-  profiles       Profile[]
-  subscriptions  Subscription[]
+  paymentProcessorUserId    String?         @unique
+  lemonSqueezyCustomerPortalUrl String?
+  subscriptionStatus        String?
+  subscriptionPlan          String?
+  datePaid                  DateTime?
+  credits                   Int             @default(3)
+
+  profiles                  Profile[]
+  subscriptions             Subscription[]
+  contactFormMessages       ContactFormMessage[]
 }
 
 model Profile {
@@ -34,13 +40,13 @@ model Profile {
 
   name           String
   city           String
-  side           String   @default("rent") // rent | sale | both
+  side           String   @default("rent")
   minPriceCents  Int      @default(0)
   maxPriceCents  Int      @default(0)
   minBedrooms    Int      @default(1)
   radiusKm       Float    @default(5.0)
-  extras         Json     @default("{}") // {quiet_only, parking, etc}
-  status         String   @default("active") // active | paused | stopped
+  extras         Json     @default("{}")
+  status         String   @default("active")
 
   matches        Match[]
 
@@ -52,12 +58,11 @@ model Listing {
   id             String   @id @default(uuid())
   sourceKey      String
   city           String
-  side           String // rent | sale
+  side           String
   priceCents     Int
   sqm            Int?
   bedrooms       Int?
   addressNorm    String
-  // PostGIS geography column - stored as raw SQL
   publishedAt    DateTime
   lastSeenAt     DateTime @default(now())
   fingerprint    String   @unique
@@ -79,7 +84,7 @@ model Match {
   listingId      String
 
   score          Float
-  signals        Json     @default("{}") // {residual, velocity, dom, quality, fit, freshness, anomaly}
+  signals        Json     @default("{}")
   matchedAt      DateTime @default(now())
   deliveredEmailAt DateTime?
   deliveredTgAt  DateTime?
@@ -93,7 +98,7 @@ model Source {
   key            String   @unique
   cityCoverage   String
   pollIntervalS  Int      @default(60)
-  status         String   @default("healthy") // healthy | degraded | down
+  status         String   @default("healthy")
   lastSuccessAt  DateTime?
 
   @@index([status])
@@ -106,9 +111,21 @@ model Subscription {
   user           User     @relation(fields: [userId], references: [id])
   userId         String
 
-  tier           String   @default("watch") // watch | deep_watch
-  status         String   @default("active") // active | cancelled | expired
+  tier           String   @default("watch")
+  status         String   @default("active")
   endsAt         DateTime?
 
   @@index([userId, status])
+}
+
+model ContactFormMessage {
+  id                        String          @id @default(uuid())
+  createdAt                 DateTime        @default(now())
+
+  user                      User            @relation(fields: [userId], references: [id])
+  userId                    String
+
+  content                   String
+  isRead                    Boolean         @default(false)
+  repliedAt                 DateTime?
 }

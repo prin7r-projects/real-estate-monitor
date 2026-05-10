@@ -1,195 +1,52 @@
-import { getCustomerPortalUrl, useQuery } from "wasp/client/operations";
-import { Link as WaspRouterLink, routes } from "wasp/client/router";
-import type { User } from "wasp/entities";
-import { Button } from "../client/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../client/components/ui/card";
-import { Separator } from "../client/components/ui/separator";
-import {
-  PaymentPlanId,
-  SubscriptionStatus,
-  parsePaymentPlanId,
-  prettyPaymentPlanName,
-} from "../payment/plans";
+import { Link, routes } from "wasp/client/router";
+import { useAuth } from "wasp/client/auth";
+import { logout } from "wasp/client/auth";
 
-export default function AccountPage({ user }: { user: User }) {
-  return (
-    <div className="mt-10 px-6">
-      <Card className="mb-4 lg:m-8">
-        <CardHeader>
-          <CardTitle className="text-foreground text-base font-semibold leading-6">
-            Account Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="space-y-0">
-            {!!user.email && (
-              <div className="px-6 py-4">
-                <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
-                  <div className="text-muted-foreground text-sm font-medium">
-                    Email address
-                  </div>
-                  <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
-                    {user.email}
-                  </div>
-                </div>
-              </div>
-            )}
-            {!!user.username && (
-              <>
-                <Separator />
-                <div className="px-6 py-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
-                    <div className="text-muted-foreground text-sm font-medium">
-                      Username
-                    </div>
-                    <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
-                      {user.username}
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-            <Separator />
-            <div className="px-6 py-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
-                <div className="text-muted-foreground text-sm font-medium">
-                  Your Plan
-                </div>
-                <UserCurrentSubscriptionPlan
-                  subscriptionPlan={user.subscriptionPlan}
-                  subscriptionStatus={user.subscriptionStatus}
-                  datePaid={user.datePaid}
-                />
-              </div>
-            </div>
-            <Separator />
-            <div className="px-6 py-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
-                <div className="text-muted-foreground text-sm font-medium">
-                  Credits
-                </div>
-                <div className="text-foreground mt-1 text-sm sm:col-span-1 sm:mt-0">
-                  {user.credits} credits
-                </div>
-                <div className="ml-auto mt-4 sm:mt-0">
-                  <BuyMoreButton subscriptionStatus={user.subscriptionStatus} />
-                </div>
-              </div>
-            </div>
-            <Separator />
-            <div className="px-6 py-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
-                <div className="text-muted-foreground text-sm font-medium">
-                  About
-                </div>
-                <div className="text-foreground mt-1 text-sm sm:col-span-2 sm:mt-0">
-                  I'm a cool customer.
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+export default function AccountPage() {
+  const { data: user } = useAuth();
 
-function UserCurrentSubscriptionPlan({
-  subscriptionPlan,
-  subscriptionStatus,
-  datePaid,
-}: Pick<User, "subscriptionPlan" | "subscriptionStatus" | "datePaid">) {
-  let subscriptionPlanMessage = "Free Plan";
-  if (
-    subscriptionPlan !== null &&
-    subscriptionStatus !== null &&
-    datePaid !== null
-  ) {
-    subscriptionPlanMessage = formatSubscriptionStatusMessage(
-      parsePaymentPlanId(subscriptionPlan),
-      datePaid,
-      subscriptionStatus as SubscriptionStatus,
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#F9F8F6] p-8">
+        <div className="max-w-2xl mx-auto text-center py-16">
+          <p className="text-[#222222]">Please sign in to view your account.</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <>
-      <div className="text-foreground mt-1 text-sm sm:col-span-1 sm:mt-0">
-        {subscriptionPlanMessage}
+    <div className="min-h-screen bg-[#F9F8F6] p-8">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold text-[#171417] mb-8" style={{ fontFamily: "DM Sans, sans-serif" }}>
+          Account
+        </h1>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-[#CCCCCC] p-6 mb-6">
+          <h2 className="text-xl font-semibold text-[#171417] mb-4">Profile</h2>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-[#222222]">Email</span>
+              <span className="text-[#171417]">{user.email}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#222222]">Subscription</span>
+              <span className="text-[#171417]">{user.subscriptionStatus || "None"}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <Link to={routes.ProfilesRoute.to}
+            className="flex-1 text-center py-3 px-6 border border-[#CCCCCC] rounded-full text-[#171417] hover:bg-gray-50 transition-colors">
+            My Profiles
+          </Link>
+          <button onClick={() => logout()}
+            className="flex-1 py-3 px-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors">
+            Sign Out
+          </button>
+        </div>
       </div>
-      <div className="ml-auto mt-4 sm:mt-0">
-        <CustomerPortalButton />
-      </div>
-    </>
-  );
-}
-
-function formatSubscriptionStatusMessage(
-  subscriptionPlan: PaymentPlanId,
-  datePaid: Date,
-  subscriptionStatus: SubscriptionStatus,
-): string {
-  const paymentPlanName = prettyPaymentPlanName(subscriptionPlan);
-  const statusToMessage: Record<SubscriptionStatus, string> = {
-    active: `${paymentPlanName}`,
-    past_due: `Payment for your ${paymentPlanName} plan is past due! Please update your subscription payment information.`,
-    cancel_at_period_end: `Your ${paymentPlanName} plan subscription has been canceled, but remains active until the end of the current billing period: ${prettyPrintEndOfBillingPeriod(
-      datePaid,
-    )}`,
-    deleted: `Your previous subscription has been canceled and is no longer active.`,
-  };
-
-  if (!statusToMessage[subscriptionStatus]) {
-    throw new Error(`Invalid subscription status: ${subscriptionStatus}`);
-  }
-
-  return statusToMessage[subscriptionStatus];
-}
-
-function prettyPrintEndOfBillingPeriod(date: Date) {
-  const oneMonthFromNow = new Date(date);
-  oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
-  return oneMonthFromNow.toLocaleDateString();
-}
-
-function CustomerPortalButton() {
-  const { data: customerPortalUrl, isLoading: isCustomerPortalUrlLoading } =
-    useQuery(getCustomerPortalUrl);
-
-  if (!customerPortalUrl) {
-    return null;
-  }
-
-  return (
-    <a href={customerPortalUrl} target="_blank" rel="noopener noreferrer">
-      <Button disabled={isCustomerPortalUrlLoading} variant="link">
-        Manage Payment Details
-      </Button>
-    </a>
-  );
-}
-
-function BuyMoreButton({
-  subscriptionStatus,
-}: Pick<User, "subscriptionStatus">) {
-  if (
-    subscriptionStatus === SubscriptionStatus.Active ||
-    subscriptionStatus === SubscriptionStatus.CancelAtPeriodEnd
-  ) {
-    return null;
-  }
-
-  return (
-    <WaspRouterLink
-      to={routes.PricingPageRoute.to}
-      className="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200"
-    >
-      <Button variant="link">Buy More Credits</Button>
-    </WaspRouterLink>
+    </div>
   );
 }

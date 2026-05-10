@@ -91,10 +91,10 @@ services:
       - "3002"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.real-estate-monitor-app.rule=Host(`real-estate-monitor.prin7r.com`) && PathPrefix(`/app`)"
-      - "traefik.http.routers.real-estate-monitor-app.entrypoints=websecure"
-      - "traefik.http.routers.real-estate-monitor-app.tls.certresolver=letsencrypt"
-      - "traefik.http.services.real-estate-monitor-app.loadbalancer.server.port=3002"
+      - "traefik.http.routers.skylinewatch-app.rule=Host(`skylinewatch.prin7r-app.com`)"
+      - "traefik.http.routers.skylinewatch-app.entrypoints=websecure"
+      - "traefik.http.routers.skylinewatch-app.tls.certresolver=letsencrypt"
+      - "traefik.http.services.skylinewatch-app.loadbalancer.server.port=3002"
     depends_on:
       postgres:
         condition: service_healthy

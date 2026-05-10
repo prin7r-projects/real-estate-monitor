@@ -20,7 +20,7 @@ export default function Hero() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button size="lg" variant="outline" asChild>
-                <WaspRouterLink to={routes.PricingPageRoute.to}>
+                <WaspRouterLink to={routes.SignupRoute.to}>
                   Learn More
                 </WaspRouterLink>
               </Button>

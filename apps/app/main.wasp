@@ -52,7 +52,7 @@ app SkylineWatch {
   },
 
   emailSender: {
-    provider: Dummy,
+    provider: SendGrid,
     defaultFrom: {
       name: "Skyline Watch",
       email: "alerts@real-estate-monitor.prin7r.com"
@@ -60,13 +60,11 @@ app SkylineWatch {
   },
 }
 
-// Landing page (redirects to main site)
 route LandingPageRoute { path: "/", to: LandingPage }
 page LandingPage {
   component: import LandingPage from "@src/landing-page/LandingPage"
 }
 
-// Auth pages
 route LoginRoute { path: "/login", to: LoginPage }
 page LoginPage {
   component: import Login from "@src/auth/LoginPage"
@@ -92,7 +90,6 @@ page EmailVerificationPage {
   component: import { EmailVerificationPage } from "@src/auth/email-and-pass/EmailVerificationPage",
 }
 
-// Profile management
 route ProfilesRoute { path: "/profiles", to: ProfilesPage }
 page ProfilesPage {
   authRequired: true,
@@ -105,7 +102,7 @@ page ProfileNewPage {
   component: import ProfileNewPage from "@src/profiles/ProfileNewPage"
 }
 
-route ProfileDetailRoute { path: "/profiles/:id", to: ProfileDetailPage }
+route ProfileDetailRoute { path: "/profiles/:profileId", to: ProfileDetailPage }
 page ProfileDetailPage {
   authRequired: true,
   component: import ProfileDetailPage from "@src/profiles/ProfileDetailPage"
@@ -141,7 +138,6 @@ action resumeProfile {
   entities: [Profile]
 }
 
-// Match dashboard
 route MatchesRoute { path: "/matches", to: MatchesPage }
 page MatchesPage {
   authRequired: true,
@@ -153,12 +149,6 @@ query getMatches {
   entities: [Match, Profile, Listing]
 }
 
-query getMatchDetail {
-  fn: import { getMatchDetail } from "@src/matches/operations",
-  entities: [Match, Profile, Listing]
-}
-
-// Account
 route AccountRoute { path: "/account", to: AccountPage }
 page AccountPage {
   authRequired: true,
@@ -168,65 +158,6 @@ page AccountPage {
 query getPaginatedUsers {
   fn: import { getPaginatedUsers } from "@src/user/operations",
   entities: [User]
-}
-
-action updateIsUserAdminById {
-  fn: import { updateIsUserAdminById } from "@src/user/operations",
-  entities: [User]
-}
-
-// Pricing
-route PricingPageRoute { path: "/pricing", to: PricingPage }
-page PricingPage {
-  component: import PricingPage from "@src/payment/PricingPage"
-}
-
-route CheckoutResultRoute { path: "/checkout", to: CheckoutResultPage }
-page CheckoutResultPage {
-  authRequired: true,
-  component: import CheckoutResultPage from "@src/payment/CheckoutResultPage"
-}
-
-query getCustomerPortalUrl {
-  fn: import { getCustomerPortalUrl } from  "@src/payment/operations",
-  entities: [User]
-}
-
-action generateCheckoutSession {
-  fn: import { generateCheckoutSession } from "@src/payment/operations",
-  entities: [User]
-}
-
-api paymentsWebhook {
-  fn: import { paymentsWebhook } from "@src/payment/webhook",
-  entities: [User],
-  middlewareConfigFn: import { paymentsMiddlewareConfigFn } from "@src/payment/webhook",
-  httpRoute: (POST, "/payments-webhook")
-}
-
-// Admin dashboard
-route AdminRoute { path: "/admin", to: AnalyticsDashboardPage }
-page AnalyticsDashboardPage {
-  authRequired: true,
-  component: import AnalyticsDashboardPage from "@src/admin/dashboards/analytics/AnalyticsDashboardPage"
-}
-
-route AdminUsersRoute { path: "/admin/users", to: AdminUsersPage }
-page AdminUsersPage {
-  authRequired: true,
-  component: import AdminUsers from "@src/admin/dashboards/users/UsersDashboardPage"
-}
-
-route AdminSettingsRoute { path: "/admin/settings", to: AdminSettingsPage }
-page AdminSettingsPage {
-  authRequired: true,
-  component: import AdminSettings from "@src/admin/elements/settings/SettingsPage"
-}
-
-route AdminSourcesRoute { path: "/admin/sources", to: AdminSourcesPage }
-page AdminSourcesPage {
-  authRequired: true,
-  component: import AdminSources from "@src/admin/dashboards/sources/SourcesDashboardPage"
 }
 
 route NotFoundRoute { path: "*", to: NotFoundPage }
